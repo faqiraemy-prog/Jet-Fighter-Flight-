@@ -1,0 +1,1029 @@
+<!DOCTYPE html>
+<html lang="ms">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistem Permohonan Pengesahan Taraf Perkahwinan / Sijil Bujang</title>
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=Cinzel:wght@600;700;800&display=swap" rel="stylesheet">
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Plus Jakarta Sans', 'sans-serif'],
+                        official: ['Cinzel', 'serif'],
+                    },
+                    colors: {
+                        gov: {
+                            blue: '#0f2942',
+                            royal: '#1e3a8a',
+                            gold: '#d97706',
+                            emerald: '#059669',
+                            light: '#f8fafc',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        /* Custom Styles & CSS Rules for Printing */
+        @media print {
+            body * {
+                visibility: hidden;
+            }
+            #printableLetter, #printableLetter * {
+                visibility: visible;
+            }
+            #printableLetter {
+                position: absolute;
+                left: 0;
+                top: 0;
+                width: 100%;
+                margin: 0;
+                padding: 20px;
+                background: white !important;
+                color: black !important;
+                box-shadow: none !important;
+                border: none !important;
+            }
+            .no-print {
+                display: none !important;
+            }
+        }
+
+        .step-circle {
+            transition: all 0.3s ease;
+        }
+
+        .form-input {
+            transition: all 0.2s ease-in-out;
+        }
+
+        .form-input:focus {
+            border-color: #1e3a8a;
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.15);
+        }
+
+        /* Glassmorphism Card */
+        .gov-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(226, 232, 240, 0.8);
+        }
+
+        /* Watermark Preview Letter */
+        .watermark-bg {
+            background-image: radial-gradient(circle, rgba(30,58,138,0.03) 0%, transparent 70%);
+        }
+    </style>
+</head>
+<body class="bg-slate-100 min-h-screen text-slate-800 font-sans flex flex-col justify-between relative overflow-x-hidden">
+
+    <!-- Top Header Bar -->
+    <header class="bg-gov-blue text-white shadow-xl border-b-4 border-gov-gold no-print">
+        <div class="max-w-6xl mx-auto px-4 py-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center space-x-4">
+                <div class="w-14 h-14 bg-white/10 rounded-2xl flex items-center justify-center border border-white/20 shadow-inner">
+                    <i class="fa-solid fa-building-columns text-2xl text-amber-400"></i>
+                </div>
+                <div>
+                    <div class="flex items-center gap-2">
+                        <span class="bg-amber-500/20 text-amber-300 text-[10px] font-bold px-2 py-0.5 rounded border border-amber-400/30">E-GOV PORTAL</span>
+                        <span class="text-xs text-slate-300">Sistem Borang Dalam Talian</span>
+                    </div>
+                    <h1 class="text-xl sm:text-2xl font-bold tracking-tight">Permohonan Pengesahan Taraf Perkahwinan</h1>
+                    <p class="text-xs text-slate-300">Jabatan Agama Islam & Hal Ehwal Perkahwinan (Surat Akuan Bujang)</p>
+                </div>
+            </div>
+
+            <!-- Action Buttons Header -->
+            <div class="flex items-center gap-2">
+                <button onclick="fillDemoData()" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/10">
+                    <i class="fa-solid fa-wand-magic-sparkles text-amber-300"></i> Auto-Isi Demo
+                </button>
+                <button onclick="saveDraft()" class="px-3 py-2 bg-white/10 hover:bg-white/20 text-white rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-white/10">
+                    <i class="fa-solid fa-floppy-disk text-emerald-400"></i> Simpan Draf
+                </button>
+                <button onclick="resetFormConfirmation()" class="px-3 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 rounded-xl text-xs font-semibold flex items-center gap-1.5 transition border border-rose-400/20">
+                    <i class="fa-solid fa-rotate-right"></i> Semula
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="max-w-6xl mx-auto px-4 py-8 w-full flex-1 no-print">
+
+        <!-- Progress Stepper Header -->
+        <div class="gov-card rounded-2xl p-4 sm:p-6 shadow-md mb-8">
+            <div class="grid grid-cols-5 gap-2 relative">
+                <!-- Line Behind Circles -->
+                <div class="hidden sm:block absolute top-1/2 left-0 right-0 h-1 bg-slate-200 -translate-y-1/2 z-0"></div>
+                <div id="progressLine" class="hidden sm:block absolute top-1/2 left-0 h-1 bg-gov-royal -translate-y-1/2 z-0 transition-all duration-500" style="width: 0%;"></div>
+
+                <!-- Step 1 -->
+                <div class="step-item text-center relative z-10 cursor-pointer" onclick="goToStep(1)">
+                    <div id="stepCircle-1" class="step-circle w-10 h-10 mx-auto rounded-full bg-gov-royal text-white font-bold flex items-center justify-center text-sm shadow-md ring-4 ring-blue-100">
+                        1
+                    </div>
+                    <span class="block text-[11px] sm:text-xs font-bold mt-2 text-gov-royal" id="stepLabel-1">Pemohon</span>
+                </div>
+
+                <!-- Step 2 -->
+                <div class="step-item text-center relative z-10 cursor-pointer" onclick="goToStep(2)">
+                    <div id="stepCircle-2" class="step-circle w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm">
+                        2
+                    </div>
+                    <span class="block text-[11px] sm:text-xs font-medium mt-2 text-slate-500" id="stepLabel-2">Tujuan</span>
+                </div>
+
+                <!-- Step 3 -->
+                <div class="step-item text-center relative z-10 cursor-pointer" onclick="goToStep(3)">
+                    <div id="stepCircle-3" class="step-circle w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm">
+                        3
+                    </div>
+                    <span class="block text-[11px] sm:text-xs font-medium mt-2 text-slate-500" id="stepLabel-3">Saksi</span>
+                </div>
+
+                <!-- Step 4 -->
+                <div class="step-item text-center relative z-10 cursor-pointer" onclick="goToStep(4)">
+                    <div id="stepCircle-4" class="step-circle w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm">
+                        4
+                    </div>
+                    <span class="block text-[11px] sm:text-xs font-medium mt-2 text-slate-500" id="stepLabel-4">Dokumen</span>
+                </div>
+
+                <!-- Step 5 -->
+                <div class="step-item text-center relative z-10 cursor-pointer" onclick="goToStep(5)">
+                    <div id="stepCircle-5" class="step-circle w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm">
+                        5
+                    </div>
+                    <span class="block text-[11px] sm:text-xs font-medium mt-2 text-slate-500" id="stepLabel-5">Pengesahan</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- FORM CONTAINER -->
+        <form id="singleCertForm" onsubmit="return false;" class="gov-card rounded-3xl p-6 sm:p-10 shadow-xl border border-slate-200/80">
+
+            <!-- STEP 1: MAKLUMAT PEMOHON -->
+            <div id="stepSection-1" class="form-step space-y-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-gov-blue flex items-center gap-2">
+                        <i class="fa-solid fa-user-check text-gov-royal"></i> Langkah 1: Maklumat Peribadi Pemohon
+                    </h2>
+                    <p class="text-xs text-slate-500">Isi maklumat asas anda mengikut Kad Pengenalan (MyKad) atau Pasport.</p>
+                </div>
+
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nama Penuh (Mengikut MyKad) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="fullname" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="Contoh: AHMAD FAHMI BIN ABDULLAH" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombor Kad Pengenalan (MyKad) <span class="text-rose-500">*</span></label>
+                        <input type="text" id="icnumber" maxlength="14" oninput="formatIC(this)" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="980512-10-5431" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Tarikh Lahir <span class="text-rose-500">*</span></label>
+                        <input type="date" id="dob" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Jantina <span class="text-rose-500">*</span></label>
+                        <select id="gender" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" required>
+                            <option value="">-- Pilih Jantina --</option>
+                            <option value="Lelaki">Lelaki</option>
+                            <option value="Perempuan">Perempuan</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Agama <span class="text-rose-500">*</span></label>
+                        <select id="religion" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" required>
+                            <option value="Islam">Islam</option>
+                            <option value="Kristian">Kristian</option>
+                            <option value="Buddha">Buddha</option>
+                            <option value="Hindu">Hindu</option>
+                            <option value="Lain-lain">Lain-lain</option>
+                        </select>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nombor Telefon Bimbit <span class="text-rose-500">*</span></label>
+                        <input type="tel" id="phone" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="012-3456789" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Alamat E-mel <span class="text-rose-500">*</span></label>
+                        <input type="email" id="email" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="ahmad.fahmi@email.com" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Pekerjaan <span class="text-rose-500">*</span></label>
+                        <input type="text" id="occupation" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="Jurutera Perisian" required>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Negeri Kediaman <span class="text-rose-500">*</span></label>
+                        <select id="state" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" required>
+                            <option value="">-- Pilih Negeri --</option>
+                            <option value="Selangor">Selangor</option>
+                            <option value="W.P. Kuala Lumpur">W.P. Kuala Lumpur</option>
+                            <option value="Johor">Johor</option>
+                            <option value="Kedah">Kedah</option>
+                            <option value="Kelantan">Kelantan</option>
+                            <option value="Melaka">Melaka</option>
+                            <option value="Negeri Sembilan">Negeri Sembilan</option>
+                            <option value="Pahang">Pahang</option>
+                            <option value="Perak">Perak</option>
+                            <option value="Perlis">Perlis</option>
+                            <option value="Pulau Pinang">Pulau Pinang</option>
+                            <option value="Sabah">Sabah</option>
+                            <option value="Sarawak">Sarawak</option>
+                            <option value="Terengganu">Terengganu</option>
+                        </select>
+                    </div>
+
+                    <div class="md:col-span-2">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Alamat Kediaman Semasa <span class="text-rose-500">*</span></label>
+                        <textarea id="address" rows="3" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="No. 12, Jalan Bunga Raya 3, Taman Maju..." required></textarea>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 2: STATUS & TUJUAN PERMOHONAN -->
+            <div id="stepSection-2" class="form-step hidden space-y-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-gov-blue flex items-center gap-2">
+                        <i class="fa-solid fa-heart-circle-check text-gov-royal"></i> Langkah 2: Status Perkahwinan & Tujuan Permohonan
+                    </h2>
+                    <p class="text-xs text-slate-500">Pengakuan taraf perkahwinan semasa dan sebab permohonan dibuat.</p>
+                </div>
+
+                <div class="space-y-5">
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Pengakuan Taraf Perkahwinan Semasa <span class="text-rose-500">*</span></label>
+                        <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                            <label class="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:border-gov-royal transition bg-white">
+                                <input type="radio" name="maritalStatus" value="Bujang / Belum Pernah Berkahwin" checked class="w-4 h-4 text-gov-royal">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-800">Bujang</p>
+                                    <p class="text-[11px] text-slate-500">Belum pernah berkahwin</p>
+                                </div>
+                            </label>
+
+                            <label class="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:border-gov-royal transition bg-white">
+                                <input type="radio" name="maritalStatus" value="Bercerai (Duda / Janda)" class="w-4 h-4 text-gov-royal">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-800">Bercerai</p>
+                                    <p class="text-[11px] text-slate-500">Mempunyai Surat Cerai Rasmi</p>
+                                </div>
+                            </label>
+
+                            <label class="border-2 border-slate-200 rounded-2xl p-4 flex items-center gap-3 cursor-pointer hover:border-gov-royal transition bg-white">
+                                <input type="radio" name="maritalStatus" value="Balu / Duda (Kematian Pasangan)" class="w-4 h-4 text-gov-royal">
+                                <div>
+                                    <p class="text-sm font-bold text-slate-800">Balu / Duda</p>
+                                    <p class="text-[11px] text-slate-500">Kematian Suami/Isteri</p>
+                                </div>
+                            </label>
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-2">Tujuan Permohonan Sijil Bujang <span class="text-rose-500">*</span></label>
+                        <select id="purpose" onchange="togglePurposeOther()" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" required>
+                            <option value="">-- Pilih Tujuan --</option>
+                            <option value="Permohonan Kebenaran Berkahwin">Permohonan Kebenaran Berkahwin (JPN / Agama)</option>
+                            <option value="Permohonan Pinjaman Perumahan / Bank">Permohonan Pinjaman Perumahan / Bank</option>
+                            <option value="Urusan Pekerjaan / Kerjaya">Urusan Pekerjaan / Syarikat / Kerajaan</option>
+                            <option value="Sambung Pengajian / Beasiswa">Sambung Pengajian / Biasiswa Luar Negara</option>
+                            <option value="Urusan Visa & Perjalanan Luar Negara">Urusan Visa & Perjalanan Luar Negara</option>
+                            <option value="Lain-lain">Lain-lain Tujuan</option>
+                        </select>
+                    </div>
+
+                    <div id="otherPurposeBox" class="hidden">
+                        <label class="block text-xs font-bold text-slate-700 uppercase mb-1">Nyatakan Tujuan Lain <span class="text-rose-500">*</span></label>
+                        <input type="text" id="otherPurposeText" class="form-input w-full px-4 py-3 rounded-xl border border-slate-300 text-sm bg-white" placeholder="Nyatakan secara terperinci...">
+                    </div>
+
+                    <!-- Partner Info if Purpose is Marriage -->
+                    <div id="partnerInfoBox" class="p-5 bg-blue-50/50 rounded-2xl border border-blue-200 space-y-4">
+                        <h4 class="text-xs font-bold text-gov-royal uppercase flex items-center gap-2">
+                            <i class="fa-solid fa-ring"></i> Maklumat Bakal Pasangan (Jika Berkenaan)
+                        </h4>
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Bakal Pasangan</label>
+                                <input type="text" id="partnerName" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="NUR SYAFIQAH BINTI HASNAN">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-700 mb-1">No. MyKad / Pasport Pasangan</label>
+                                <input type="text" id="partnerIC" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="990820-14-6122">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 3: MAKLUMAT SAKSI / PENJAMIN -->
+            <div id="stepSection-3" class="form-step hidden space-y-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-gov-blue flex items-center gap-2">
+                        <i class="fa-solid fa-users-rectangle text-gov-royal"></i> Langkah 3: Maklumat Saksi / Penjamin (2 Orang)
+                    </h2>
+                    <p class="text-xs text-slate-500">Saksi mestilah Warganegara Malaysia berumur 21 tahun ke atas yang mengenali anda.</p>
+                </div>
+
+                <!-- Saksi 1 -->
+                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-gov-royal flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-gov-royal text-white text-xs flex items-center justify-center">1</span>
+                        Maklumat Saksi Pertama
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Penuh Saksi 1 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness1Name" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="MUSTAFA BIN ZULKIFLI" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">No. MyKad Saksi 1 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness1IC" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="720315-08-5119" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">No. Telefon Saksi 1 <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="witness1Phone" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="019-8765432" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Hubungan dengan Pemohon <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness1Relation" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="Bapa / Ibu / Bapa Saudara / Majikan" required>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Saksi 2 -->
+                <div class="p-5 bg-slate-50 rounded-2xl border border-slate-200 space-y-4">
+                    <h3 class="text-sm font-bold text-gov-royal flex items-center gap-2">
+                        <span class="w-6 h-6 rounded-full bg-gov-royal text-white text-xs flex items-center justify-center">2</span>
+                        Maklumat Saksi Kedua
+                    </h3>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Nama Penuh Saksi 2 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness2Name" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="KAMARUL ARIFFIN BIN ISMAIL" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">No. MyKad Saksi 2 <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness2IC" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="851022-10-5337" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">No. Telefon Saksi 2 <span class="text-rose-500">*</span></label>
+                            <input type="tel" id="witness2Phone" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="017-3321144" required>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-700 mb-1">Hubungan dengan Pemohon <span class="text-rose-500">*</span></label>
+                            <input type="text" id="witness2Relation" class="form-input w-full px-4 py-2.5 rounded-xl border border-slate-300 text-sm bg-white" placeholder="Rakan Kerja / Jiran" required>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: MUAT NAIK DOKUMEN & PENGESAHAN -->
+            <div id="stepSection-4" class="form-step hidden space-y-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-gov-blue flex items-center gap-2">
+                        <i class="fa-solid fa-file-arrow-up text-gov-royal"></i> Langkah 4: Muat Naik Dokumen & Tandatangan Digital
+                    </h2>
+                    <p class="text-xs text-slate-500">Sila muat naik salinan dokumen sokongan (Format PDF/JPG, Max 5MB).</p>
+                </div>
+
+                <!-- Document Upload List -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="p-4 border border-dashed border-slate-300 rounded-2xl bg-slate-50 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-id-card text-2xl text-gov-royal"></i>
+                            <div>
+                                <p class="text-xs font-bold text-slate-800">Salinan MyKad Pemohon</p>
+                                <p class="text-[10px] text-slate-500" id="fileStatus-1">Belum dimuat naik</p>
+                            </div>
+                        </div>
+                        <label class="cursor-pointer bg-white border border-slate-300 hover:bg-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold text-gov-royal transition">
+                            Pilih Fail <input type="file" onchange="handleFileUpload(1, this)" class="hidden" accept="image/*,.pdf">
+                        </label>
+                    </div>
+
+                    <div class="p-4 border border-dashed border-slate-300 rounded-2xl bg-slate-50 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-file-signature text-2xl text-gov-royal"></i>
+                            <div>
+                                <p class="text-xs font-bold text-slate-800">Surat Akuan Sumpah Bujang</p>
+                                <p class="text-[10px] text-slate-500" id="fileStatus-2">Belum dimuat naik</p>
+                            </div>
+                        </div>
+                        <label class="cursor-pointer bg-white border border-slate-300 hover:bg-slate-100 px-3 py-1.5 rounded-xl text-xs font-bold text-gov-royal transition">
+                            Pilih Fail <input type="file" onchange="handleFileUpload(2, this)" class="hidden" accept="image/*,.pdf">
+                        </label>
+                    </div>
+                </div>
+
+                <!-- Digital Signature Canvas Pad -->
+                <div class="p-5 border border-slate-200 rounded-2xl bg-slate-50/80 space-y-3">
+                    <div class="flex justify-between items-center">
+                        <label class="block text-xs font-bold text-gov-royal uppercase">Tandatangan Digital Pemohon <span class="text-rose-500">*</span></label>
+                        <button type="button" onclick="clearSignature()" class="text-xs text-rose-600 hover:underline font-semibold">
+                            <i class="fa-solid fa-eraser"></i> Padam Tandatangan
+                        </button>
+                    </div>
+                    <div class="bg-white border-2 border-slate-300 rounded-xl overflow-hidden shadow-inner relative">
+                        <canvas id="signaturePad" class="w-full h-40 cursor-crosshair touch-none"></canvas>
+                        <div id="sigPlaceholder" class="absolute inset-0 flex items-center justify-center text-slate-300 text-xs pointer-events-none">
+                            Sila turunkan tandatangan anda di dalam kotak ini
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Declaration Checklist -->
+                <div class="p-4 bg-amber-50 rounded-2xl border border-amber-200/80 space-y-2">
+                    <label class="flex items-start gap-3 cursor-pointer">
+                        <input type="checkbox" id="declarationCheck" class="w-5 h-5 text-gov-royal rounded mt-0.5" required>
+                        <span class="text-xs text-slate-700 leading-relaxed">
+                            Saya dengan ini mengaku bahawa segala maklumat yang diberikan di dalam borang ini adalah <strong>BENAR dan SAH</strong>. Saya faham bahawa membuat pengakuan palsu adalah satu kesalahan di bawah Undang-Undang Malaysia.
+                        </span>
+                    </label>
+                </div>
+            </div>
+
+            <!-- STEP 5: SEMAKAN & CETAK -->
+            <div id="stepSection-5" class="form-step hidden space-y-6">
+                <div class="border-b border-slate-200 pb-4 mb-6">
+                    <h2 class="text-xl font-bold text-gov-blue flex items-center gap-2">
+                        <i class="fa-solid fa-receipt text-gov-royal"></i> Langkah 5: Ringkasan & Cetakan Sijil Bujang
+                    </h2>
+                    <p class="text-xs text-slate-500">Semak maklumat anda sebelum mencetak atau memuat turun Surat Pengesahan Rasmi.</p>
+                </div>
+
+                <!-- Live Summary Box -->
+                <div class="bg-slate-50 rounded-2xl p-6 border border-slate-200 space-y-4">
+                    <div class="flex justify-between items-center border-b border-slate-200 pb-3">
+                        <span class="text-xs font-bold text-slate-500 uppercase">Status Permohonan</span>
+                        <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3 py-1 rounded-full border border-emerald-300">
+                            <i class="fa-solid fa-circle-check"></i> LENGKAP & DISAHKAN
+                        </span>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div>
+                            <span class="text-slate-400 block font-semibold">Nama Pemohon:</span>
+                            <span id="sumFullname" class="font-bold text-slate-800 text-sm">--</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-semibold">No. MyKad:</span>
+                            <span id="sumIC" class="font-bold text-slate-800 text-sm">--</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-semibold">Taraf Perkahwinan:</span>
+                            <span id="sumStatus" class="font-bold text-gov-royal">--</span>
+                        </div>
+                        <div>
+                            <span class="text-slate-400 block font-semibold">Tujuan Permohonan:</span>
+                            <span id="sumPurpose" class="font-bold text-slate-800">--</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Direct Action Buttons for Certificate Generation -->
+                <div class="flex flex-col sm:flex-row gap-3 pt-2">
+                    <button type="button" onclick="openCertificateModal()" class="flex-1 bg-gov-royal hover:bg-blue-900 text-white font-bold py-3.5 px-6 rounded-xl shadow-lg flex items-center justify-center gap-2 text-sm transition">
+                        <i class="fa-solid fa-file-pdf text-amber-300 text-base"></i> Papar & Cetak Surat Pengesahan Rasmi
+                    </button>
+                </div>
+            </div>
+
+            <!-- Navigation Controls Bottom -->
+            <div class="mt-10 pt-6 border-t border-slate-200 flex items-center justify-between gap-4">
+                <button type="button" id="prevBtn" onclick="changeStep(-1)" class="px-5 py-2.5 rounded-xl border border-slate-300 text-slate-600 hover:bg-slate-100 font-bold text-xs flex items-center gap-2 transition hidden">
+                    <i class="fa-solid fa-arrow-left"></i> Kembali
+                </button>
+
+                <div class="flex items-center gap-3 ml-auto">
+                    <button type="button" id="nextBtn" onclick="changeStep(1)" class="px-6 py-3 rounded-xl bg-gov-royal hover:bg-blue-900 text-white font-bold text-xs flex items-center gap-2 shadow-md transition">
+                        <span>Seterusnya</span> <i class="fa-solid fa-arrow-right"></i>
+                    </button>
+                </div>
+            </div>
+
+        </form>
+    </main>
+
+    <!-- OFFICIAL CERTIFICATE PREVIEW MODAL -->
+    <div id="certModal" class="hidden fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm overflow-y-auto">
+        <div class="bg-white w-full max-w-4xl rounded-3xl shadow-2xl overflow-hidden border border-slate-200 my-8 flex flex-col max-h-[90vh]">
+            
+            <!-- Modal Header Controls -->
+            <div class="no-print bg-gov-blue text-white px-6 py-4 flex justify-between items-center border-b border-gov-gold">
+                <div class="flex items-center gap-2">
+                    <i class="fa-solid fa-certificate text-amber-400"></i>
+                    <h3 class="font-bold text-sm">Surat Akuan Pengesahan Taraf Perkahwinan (Sijil Bujang)</h3>
+                </div>
+                <div class="flex items-center gap-2">
+                    <button onclick="window.print()" class="bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs px-4 py-2 rounded-xl flex items-center gap-1.5 transition">
+                        <i class="fa-solid fa-print"></i> Cetak / Simpan PDF
+                    </button>
+                    <button onclick="closeCertificateModal()" class="text-white/60 hover:text-white p-2 rounded-lg">
+                        <i class="fa-solid fa-xmark text-lg"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- PRINTABLE OFFICIAL LETTER AREA -->
+            <div id="printableLetter" class="p-8 sm:p-12 overflow-y-auto bg-white font-sans text-slate-900 text-xs sm:text-sm leading-relaxed watermark-bg relative">
+                
+                <!-- Official Letterhead Header -->
+                <div class="text-center border-b-2 border-slate-900 pb-4 mb-6">
+                    <div class="w-16 h-16 mx-auto mb-2 text-gov-royal">
+                        <i class="fa-solid fa-shield-halved text-5xl text-gov-blue"></i>
+                    </div>
+                    <h2 class="font-official text-base sm:text-lg font-bold tracking-widest uppercase text-gov-blue">JABATAN AGAMA ISLAM & HAL EHWAL PERKAHWINAN</h2>
+                    <p class="text-[11px] text-slate-600 font-semibold">PENTADBIRAN HAL EHWAL SYARIAH & TARAF PERKAHWINAN MALAYSIA</p>
+                    <p class="text-[10px] text-slate-500">Kompleks Pentadbiran Kerajaan, 62502 W.P. Putrajaya • Tel: 03-8888 1000</p>
+                </div>
+
+                <!-- Reference & Date -->
+                <div class="flex justify-between text-[11px] font-mono mb-6">
+                    <div><strong>NO. RUJUKAN:</strong> JAI/STP/2026/<span id="certRefNo">88219</span></div>
+                    <div><strong>TARIKH DITERBITKAN:</strong> <span id="certDate">28/10/2026</span></div>
+                </div>
+
+                <!-- Letter Title -->
+                <div class="text-center my-6">
+                    <h3 class="font-bold text-base sm:text-lg underline uppercase tracking-wide text-slate-900 font-official">SURAT AKUAN PENGESAHAN TARAF PERKAHWINAN</h3>
+                    <p class="text-[11px] font-semibold text-slate-600">(SURAT AKUAN BUJANG)</p>
+                </div>
+
+                <!-- Main Content Body -->
+                <div class="space-y-4 text-justify">
+                    <p>Bahawa dengan ini adalah disahkan dan diperakui berdasarkan pengakuan dan dokumen yang dikemukakan oleh pemohon:</p>
+
+                    <!-- Applicant Details Table -->
+                    <table class="w-full border-collapse border border-slate-300 my-4 text-xs">
+                        <tbody>
+                            <tr class="border-b border-slate-300">
+                                <td class="p-2.5 font-bold bg-slate-50 w-1/3 border-r border-slate-300">NAMA PEMOHON</td>
+                                <td id="certFullname" class="p-2.5 font-bold uppercase text-gov-royal">--</td>
+                            </tr>
+                            <tr class="border-b border-slate-300">
+                                <td class="p-2.5 font-bold bg-slate-50 border-r border-slate-300">NO. KAD PENGENALAN</td>
+                                <td id="certIC" class="p-2.5 font-mono">--</td>
+                            </tr>
+                            <tr class="border-b border-slate-300">
+                                <td class="p-2.5 font-bold bg-slate-50 border-r border-slate-300">TARAF PERKAHWINAN</td>
+                                <td id="certMaritalStatus" class="p-2.5 font-extrabold text-emerald-700">--</td>
+                            </tr>
+                            <tr class="border-b border-slate-300">
+                                <td class="p-2.5 font-bold bg-slate-50 border-r border-slate-300">TUJUAN PERMOHONAN</td>
+                                <td id="certPurpose" class="p-2.5">--</td>
+                            </tr>
+                            <tr>
+                                <td class="p-2.5 font-bold bg-slate-50 border-r border-slate-300">ALAMAT KEDIAMAN</td>
+                                <td id="certAddress" class="p-2.5">--</td>
+                            </tr>
+                        </tbody>
+                    </table>
+
+                    <p>Pihak Jabatan mengesahkan bahawa mengikut rekod semakan dan akuan sumpah yang ditandatangani, penama di atas adalah <strong>BELUM PERNAH BERKAHWIN / BUJANG</strong> pada tarikh surat ini dikeluarkan.</p>
+
+                    <p>Surat pengesahan ini dikeluarkan khas untuk kegunaan: <strong id="certPurposeDetails">--</strong>.</p>
+                </div>
+
+                <!-- Signatures Grid -->
+                <div class="grid grid-cols-2 gap-8 mt-12 pt-6 text-center text-xs">
+                    <div>
+                        <p class="font-bold text-slate-700 mb-2">Tandatangan Pemohon:</p>
+                        <div class="h-20 flex items-center justify-center border-b border-slate-400">
+                            <img id="certSigImg" src="" alt="Tandatangan" class="max-h-16 hidden">
+                            <span id="noSigText" class="text-slate-400 italic text-[10px]">[Tandatangan Digital]</span>
+                        </div>
+                        <p id="certSignerName" class="font-bold uppercase mt-1">--</p>
+                    </div>
+
+                    <div>
+                        <p class="font-bold text-slate-700 mb-2">Pengesahan Pegawai Bertauliah:</p>
+                        <div class="h-20 flex flex-col items-center justify-center border-b border-slate-400 relative">
+                            <!-- Official Stamp Simulation -->
+                            <div class="absolute w-20 h-20 rounded-full border-2 border-blue-800/40 flex items-center justify-center text-[8px] font-bold text-blue-900 uppercase rotate-12 pointer-events-none">
+                                JAI OFFICIAL STAMP
+                            </div>
+                            <span class="font-official font-bold text-slate-800 text-sm">Dato' Dr. Wan Azmi</span>
+                        </div>
+                        <p class="font-bold uppercase mt-1">Ketua Pendaftar Taraf Perkahwinan</p>
+                    </div>
+                </div>
+
+                <!-- Footer Disclaimer -->
+                <div class="mt-12 pt-4 border-t border-slate-300 text-[10px] text-slate-500 text-center">
+                    <p>Surat pengesahan ini dihasilkan secara digital melalui Portal Rasmi e-Gov. Sah tanpa tandatangan fizikal jika disemak melalui kod QR berdaftar.</p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 bg-slate-900 text-white px-5 py-3.5 rounded-2xl shadow-2xl border border-slate-700 flex items-center gap-3 text-xs font-semibold transition-all duration-300 opacity-0 pointer-events-none transform translate-y-4">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-emerald-400 text-base"></i>
+        <span id="toastMsg">Mesej Notifikasi</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="bg-gov-blue text-white/70 py-6 text-center text-xs border-t border-gov-gold/30 no-print">
+        <p>© 2026 Portal Rasmi Pengesahan Taraf Perkahwinan • Kerajaan Malaysia</p>
+    </footer>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+        // --- APP STATE ---
+        let currentStep = 1;
+        const totalSteps = 5;
+
+        // --- DOM ELEMENTS ---
+        const singleCertForm = document.getElementById('singleCertForm');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const progressLine = document.getElementById('progressLine');
+
+        // Signature Canvas Variables
+        const canvas = document.getElementById('signaturePad');
+        const ctx = canvas.getContext('2d');
+        let isDrawing = false;
+        let hasSignature = false;
+
+        // --- INITIALIZATION ---
+        window.addEventListener('DOMContentLoaded', () => {
+            initCanvas();
+            loadDraft();
+            updateStepView();
+        });
+
+        // Resize Canvas correctly
+        function initCanvas() {
+            const rect = canvas.getBoundingClientRect();
+            canvas.width = rect.width || 400;
+            canvas.height = 160;
+
+            ctx.strokeStyle = "#0f2942";
+            ctx.lineWidth = 2.5;
+            ctx.lineCap = "round";
+
+            // Event Listeners for Mouse
+            canvas.addEventListener('mousedown', startDrawing);
+            canvas.addEventListener('mousemove', draw);
+            canvas.addEventListener('mouseup', stopDrawing);
+            canvas.addEventListener('mouseleave', stopDrawing);
+
+            // Touch support for Mobile
+            canvas.addEventListener('touchstart', (e) => {
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                isDrawing = true;
+                ctx.beginPath();
+                ctx.moveTo(touch.clientX - rect.left, touch.clientY - rect.top);
+            });
+            canvas.addEventListener('touchmove', (e) => {
+                if (!isDrawing) return;
+                const touch = e.touches[0];
+                const rect = canvas.getBoundingClientRect();
+                ctx.lineTo(touch.clientX - rect.left, touch.clientY - rect.top);
+                ctx.stroke();
+                hasSignature = true;
+                document.getElementById('sigPlaceholder').classList.add('hidden');
+                e.preventDefault();
+            });
+            canvas.addEventListener('touchend', stopDrawing);
+        }
+
+        function startDrawing(e) {
+            isDrawing = true;
+            ctx.beginPath();
+            ctx.moveTo(e.offsetX, e.offsetY);
+        }
+
+        function draw(e) {
+            if (!isDrawing) return;
+            ctx.lineTo(e.offsetX, e.offsetY);
+            ctx.stroke();
+            hasSignature = true;
+            document.getElementById('sigPlaceholder').classList.add('hidden');
+        }
+
+        function stopDrawing() {
+            isDrawing = false;
+        }
+
+        function clearSignature() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            hasSignature = false;
+            document.getElementById('sigPlaceholder').classList.remove('hidden');
+        }
+
+        // --- STEP NAVIGATION LOGIC ---
+        function goToStep(step) {
+            if (step > currentStep && !validateCurrentStep()) {
+                return;
+            }
+            currentStep = step;
+            updateStepView();
+        }
+
+        function changeStep(delta) {
+            if (delta === 1 && !validateCurrentStep()) {
+                return;
+            }
+
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > totalSteps) currentStep = totalSteps;
+
+            updateStepView();
+        }
+
+        function updateStepView() {
+            // Hide all steps
+            for (let i = 1; i <= totalSteps; i++) {
+                document.getElementById(`stepSection-${i}`).classList.add('hidden');
+                
+                const circle = document.getElementById(`stepCircle-${i}`);
+                const label = document.getElementById(`stepLabel-${i}`);
+
+                if (i < currentStep) {
+                    circle.className = "step-circle w-10 h-10 mx-auto rounded-full bg-emerald-600 text-white font-bold flex items-center justify-center text-sm shadow-md";
+                    circle.innerHTML = '<i class="fa-solid fa-check"></i>';
+                    label.className = "block text-[11px] sm:text-xs font-bold mt-2 text-emerald-600";
+                } else if (i === currentStep) {
+                    circle.className = "step-circle w-10 h-10 mx-auto rounded-full bg-gov-royal text-white font-bold flex items-center justify-center text-sm shadow-md ring-4 ring-blue-100";
+                    circle.innerText = i;
+                    label.className = "block text-[11px] sm:text-xs font-bold mt-2 text-gov-royal";
+                } else {
+                    circle.className = "step-circle w-10 h-10 mx-auto rounded-full bg-slate-200 text-slate-600 font-bold flex items-center justify-center text-sm";
+                    circle.innerText = i;
+                    label.className = "block text-[11px] sm:text-xs font-medium mt-2 text-slate-500";
+                }
+            }
+
+            // Show current step
+            document.getElementById(`stepSection-${currentStep}`).classList.remove('hidden');
+
+            // Update Progress Line Width
+            const progressPercent = ((currentStep - 1) / (totalSteps - 1)) * 100;
+            progressLine.style.width = `${progressPercent}%`;
+
+            // Button Visibility
+            if (currentStep === 1) {
+                prevBtn.classList.add('hidden');
+            } else {
+                prevBtn.classList.remove('hidden');
+            }
+
+            if (currentStep === totalSteps) {
+                nextBtn.classList.add('hidden');
+                populateSummary();
+            } else {
+                nextBtn.classList.remove('hidden');
+            }
+
+            window.scrollTo({ top: 100, behavior: 'smooth' });
+        }
+
+        // --- STEP VALIDATION ---
+        function validateCurrentStep() {
+            if (currentStep === 1) {
+                const fullname = document.getElementById('fullname').value.trim();
+                const ic = document.getElementById('icnumber').value.trim();
+                const phone = document.getElementById('phone').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const address = document.getElementById('address').value.trim();
+
+                if (!fullname || !ic || !phone || !email || !address) {
+                    showToast("Sila lengkapkan semua ruangan maklumat peribadi!", "error");
+                    return false;
+                }
+            } else if (currentStep === 2) {
+                const purpose = document.getElementById('purpose').value;
+                if (!purpose) {
+                    showToast("Sila pilih tujuan permohonan!", "error");
+                    return false;
+                }
+            } else if (currentStep === 3) {
+                const w1Name = document.getElementById('witness1Name').value.trim();
+                const w1IC = document.getElementById('witness1IC').value.trim();
+                const w2Name = document.getElementById('witness2Name').value.trim();
+                const w2IC = document.getElementById('witness2IC').value.trim();
+
+                if (!w1Name || !w1IC || !w2Name || !w2IC) {
+                    showToast("Sila lengkapkan maklumat kedua-dua saksi!", "error");
+                    return false;
+                }
+            } else if (currentStep === 4) {
+                const checked = document.getElementById('declarationCheck').checked;
+                if (!checked) {
+                    showToast("Sila tandakan pengakuan sah sebelum meneruskan!", "error");
+                    return false;
+                }
+                if (!hasSignature) {
+                    showToast("Sila turunkan tandatangan digital anda!", "error");
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        // Auto format IC Number with dashes
+        function formatIC(input) {
+            let val = input.value.replace(/\D/g, '');
+            if (val.length > 6 && val.length <= 8) {
+                val = val.slice(0, 6) + '-' + val.slice(6);
+            } else if (val.length > 8) {
+                val = val.slice(0, 6) + '-' + val.slice(6, 8) + '-' + val.slice(8, 12);
+            }
+            input.value = val;
+        }
+
+        function togglePurposeOther() {
+            const val = document.getElementById('purpose').value;
+            const otherBox = document.getElementById('otherPurposeBox');
+            const partnerBox = document.getElementById('partnerInfoBox');
+
+            if (val === 'Lain-lain') {
+                otherBox.classList.remove('hidden');
+            } else {
+                otherBox.classList.add('hidden');
+            }
+
+            if (val === 'Permohonan Kebenaran Berkahwin') {
+                partnerBox.classList.remove('hidden');
+            } else {
+                partnerBox.classList.add('hidden');
+            }
+        }
+
+        function handleFileUpload(id, input) {
+            const statusEl = document.getElementById(`fileStatus-${id}`);
+            if (input.files && input.files[0]) {
+                statusEl.innerText = `Dimuat naik: ${input.files[0].name}`;
+                statusEl.className = "text-[10px] text-emerald-600 font-bold";
+                showToast("Fail berjaya dimuat naik!");
+            }
+        }
+
+        // --- POPULATE SUMMARY & CERTIFICATE ---
+        function populateSummary() {
+            const fullname = document.getElementById('fullname').value || '--';
+            const ic = document.getElementById('icnumber').value || '--';
+            const maritalStatus = document.querySelector('input[name="maritalStatus"]:checked')?.value || 'Bujang';
+            const purpose = document.getElementById('purpose').value || '--';
+            const address = document.getElementById('address').value || '--';
+
+            document.getElementById('sumFullname').innerText = fullname.toUpperCase();
+            document.getElementById('sumIC').innerText = ic;
+            document.getElementById('sumStatus').innerText = maritalStatus;
+            document.getElementById('sumPurpose').innerText = purpose;
+
+            // Populate Modal Letter
+            document.getElementById('certFullname').innerText = fullname.toUpperCase();
+            document.getElementById('certIC').innerText = ic;
+            document.getElementById('certMaritalStatus').innerText = maritalStatus.toUpperCase();
+            document.getElementById('certPurpose').innerText = purpose;
+            document.getElementById('certPurposeDetails').innerText = purpose;
+            document.getElementById('certAddress').innerText = address;
+            document.getElementById('certSignerName').innerText = fullname;
+
+            // Random Reference Number & Current Date
+            document.getElementById('certRefNo').innerText = Math.floor(10000 + Math.random() * 90000);
+            const today = new Date();
+            document.getElementById('certDate').innerText = `${today.getDate()}/${today.getMonth() + 1}/${today.getFullYear()}`;
+
+            // Attach Signature Image to Letter
+            if (hasSignature) {
+                const dataURL = canvas.toDataURL();
+                const sigImg = document.getElementById('certSigImg');
+                sigImg.src = dataURL;
+                sigImg.classList.remove('hidden');
+                document.getElementById('noSigText').classList.add('hidden');
+            }
+        }
+
+        function openCertificateModal() {
+            populateSummary();
+            document.getElementById('certModal').classList.remove('hidden');
+        }
+
+        function closeCertificateModal() {
+            document.getElementById('certModal').classList.add('hidden');
+        }
+
+        // --- AUTO FILL DEMO DATA ---
+        function fillDemoData() {
+            document.getElementById('fullname').value = "MUHAMMAD HAZIQ BIN ROSLI";
+            document.getElementById('icnumber').value = "971104-14-5589";
+            document.getElementById('dob').value = "1997-11-04";
+            document.getElementById('gender').value = "Lelaki";
+            document.getElementById('religion').value = "Islam";
+            document.getElementById('phone').value = "018-2938471";
+            document.getElementById('email').value = "haziq.rosli@email.com";
+            document.getElementById('occupation').value = "Pengurus Pemasaran";
+            document.getElementById('state').value = "Selangor";
+            document.getElementById('address').value = "No. 45, Jalan Utama 2/3, Taman Subang Perdana, 40150 Shah Alam, Selangor";
+
+            document.getElementById('purpose').value = "Permohonan Kebenaran Berkahwin";
+            togglePurposeOther();
+            document.getElementById('partnerName').value = "NURUL AIN BINTI ZULKIFLI";
+            document.getElementById('partnerIC').value = "980214-10-6220";
+
+            document.getElementById('witness1Name').value = "ROSLI BIN AHMAD";
+            document.getElementById('witness1IC').value = "680512-10-5111";
+            document.getElementById('witness1Phone').value = "012-3456789";
+            document.getElementById('witness1Relation').value = "Bapa Kandung";
+
+            document.getElementById('witness2Name').value = "AZMAN BIN SHAH";
+            document.getElementById('witness2IC').value = "750918-08-5433";
+            document.getElementById('witness2Phone').value = "019-8877665";
+            document.getElementById('witness2Relation').value = "Bapa Saudara";
+
+            document.getElementById('declarationCheck').checked = true;
+
+            showToast("Data Demo Berjaya Diisi!");
+        }
+
+        // --- SAVE & LOAD DRAFTS ---
+        function saveDraft() {
+            const draftData = {
+                fullname: document.getElementById('fullname').value,
+                icnumber: document.getElementById('icnumber').value,
+                phone: document.getElementById('phone').value,
+                email: document.getElementById('email').value,
+                address: document.getElementById('address').value,
+                purpose: document.getElementById('purpose').value,
+            };
+            localStorage.setItem('sijil_bujang_draft', JSON.stringify(draftData));
+            showToast("Draf permohonan berjaya disimpan!");
+        }
+
+        function loadDraft() {
+            const saved = localStorage.getItem('sijil_bujang_draft');
+            if (saved) {
+                const data = JSON.parse(saved);
+                if (data.fullname) document.getElementById('fullname').value = data.fullname;
+                if (data.icnumber) document.getElementById('icnumber').value = data.icnumber;
+                if (data.phone) document.getElementById('phone').value = data.phone;
+                if (data.email) document.getElementById('email').value = data.email;
+                if (data.address) document.getElementById('address').value = data.address;
+                if (data.purpose) document.getElementById('purpose').value = data.purpose;
+            }
+        }
+
+        function resetFormConfirmation() {
+            if (confirm("Adakah anda pasti mahu memadam semua jawapan dan bermula semula?")) {
+                singleCertForm.reset();
+                clearSignature();
+                localStorage.removeItem('sijil_bujang_draft');
+                currentStep = 1;
+                updateStepView();
+                showToast("Borang telah disemula.");
+            }
+        }
+
+        // --- TOAST SYSTEM ---
+        function showToast(msg, type = "success") {
+            const toast = document.getElementById('toast');
+            const toastMsg = document.getElementById('toastMsg');
+            const toastIcon = document.getElementById('toastIcon');
+
+            toastMsg.innerText = msg;
+            if (type === "error") {
+                toastIcon.className = "fa-solid fa-circle-exclamation text-rose-400 text-base";
+            } else {
+                toastIcon.className = "fa-solid fa-circle-check text-emerald-400 text-base";
+            }
+
+            toast.classList.remove('opacity-0', 'pointer-events-none', 'translate-y-4');
+            toast.classList.add('opacity-100', 'translate-y-0');
+
+            setTimeout(() => {
+                toast.classList.remove('opacity-100', 'translate-y-0');
+                toast.classList.add('opacity-0', 'pointer-events-none', 'translate-y-4');
+            }, 3000);
+        }
+    </script>
+</body>
+</html>
