@@ -1,0 +1,681 @@
+<!DOCTYPE html>
+<html lang="ms" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Penjana Kata-Kata Hikmat Interaktif</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts (Inter & Playfair Display) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,400&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                        serif: ['Playfair Display', 'serif'],
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out forwards',
+                        'bounce-short': 'bounceShort 0.3s ease-in-out 2',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0', transform: 'translateY(10px)' },
+                            '100%': { opacity: '1', transform: 'translateY(0)' },
+                        },
+                        bounceShort: {
+                            '0%, 100%': { transform: 'translateY(0)' },
+                            '50%': { transform: 'translateY(-4px)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        .glassmorphism {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.4);
+        }
+        .dark .glassmorphism {
+            background: rgba(17, 24, 39, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        /* Custom scrollbar for modal */
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(156, 163, 175, 0.5);
+            border-radius: 9999px;
+        }
+    </style>
+</head>
+<body class="h-full bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 dark:from-gray-900 dark:via-slate-900 dark:to-indigo-950 font-sans transition-colors duration-500 flex flex-col justify-between text-gray-800 dark:text-gray-100 min-h-screen">
+
+    <!-- Header / Navbar -->
+    <header class="w-full max-w-5xl mx-auto px-4 pt-6 flex justify-between items-center">
+        <div class="flex items-center gap-3">
+            <div class="p-2.5 bg-white/20 dark:bg-black/20 backdrop-blur-md rounded-2xl border border-white/30 text-white shadow-lg">
+                <i class="fa-solid font-bold fa-quote-left text-xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl md:text-2xl font-bold tracking-tight text-white drop-shadow-sm">HikmatKata</h1>
+                <p class="text-xs text-white/80 hidden sm:block">Inspirasi & Hati Nurani Setiap Hari</p>
+            </div>
+        </div>
+
+        <div class="flex items-center gap-2">
+            <!-- Favorites Modal Toggle Button -->
+            <button id="openFavoritesBtn" title="Kegemaran Saya" class="relative flex items-center gap-2 px-4 py-2 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/40 text-white backdrop-blur-md rounded-xl border border-white/30 transition-all duration-300 shadow-sm active:scale-95">
+                <i class="fa-solid fa-bookmark text-amber-300"></i>
+                <span class="text-sm font-medium hidden sm:inline">Simpanan</span>
+                <span id="favCountBadge" class="ml-1 px-2 py-0.5 text-xs font-bold bg-amber-400 text-gray-900 rounded-full hidden">0</span>
+            </button>
+
+            <!-- Dark Mode Toggle Button -->
+            <button id="themeToggleBtn" title="Tukar Mod" class="p-2.5 bg-white/20 hover:bg-white/30 dark:bg-black/20 dark:hover:bg-black/40 text-white backdrop-blur-md rounded-xl border border-white/30 transition-all duration-300 shadow-sm active:scale-95">
+                <i id="themeIcon" class="fa-solid fa-moon text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <main class="w-full max-w-4xl mx-auto px-4 py-8 flex-1 flex flex-col justify-center items-center">
+
+        <!-- Filter & Search Controls -->
+        <div class="w-full mb-6 flex flex-col md:flex-row gap-3 justify-between items-center">
+            
+            <!-- Category Chips -->
+            <div class="flex flex-wrap justify-center gap-2 w-full md:w-auto" id="categoryContainer">
+                <button data-category="all" class="category-btn active px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white dark:bg-gray-800 text-purple-600 dark:text-purple-400 shadow-md border border-purple-200 dark:border-purple-800 transition-all">
+                    ✨ Semua
+                </button>
+                <button data-category="Motivasi" class="category-btn px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 text-white dark:text-gray-300 backdrop-blur-md border border-white/20 transition-all">
+                    🔥 Motivasi
+                </button>
+                <button data-category="Kebijaksanaan" class="category-btn px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 text-white dark:text-gray-300 backdrop-blur-md border border-white/20 transition-all">
+                    🧠 Kebijaksanaan
+                </button>
+                <button data-category="Kehidupan" class="category-btn px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 text-white dark:text-gray-300 backdrop-blur-md border border-white/20 transition-all">
+                    🌱 Kehidupan
+                </button>
+                <button data-category="Kejayaan" class="category-btn px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 text-white dark:text-gray-300 backdrop-blur-md border border-white/20 transition-all">
+                    🚀 Kejayaan
+                </button>
+                <button data-category="Teknologi" class="category-btn px-3.5 py-1.5 rounded-full text-xs md:text-sm font-medium bg-white/40 dark:bg-gray-800/40 hover:bg-white dark:hover:bg-gray-800 text-white dark:text-gray-300 backdrop-blur-md border border-white/20 transition-all">
+                    💻 Teknologi
+                </button>
+            </div>
+
+            <!-- Search Input -->
+            <div class="relative w-full md:w-64">
+                <input type="text" id="searchInput" placeholder="Cari kata-kata / penulis..." class="w-full pl-9 pr-4 py-2 text-xs md:text-sm rounded-xl bg-white/40 dark:bg-gray-800/50 backdrop-blur-md text-white placeholder-white/70 dark:placeholder-gray-400 border border-white/30 dark:border-gray-700 focus:outline-none focus:ring-2 focus:ring-white/50 transition-all">
+                <i class="fa-solid fa-magnifying-glass absolute left-3 top-2.5 text-xs text-white/70 dark:text-gray-400"></i>
+            </div>
+        </div>
+
+        <!-- Main Quote Display Card -->
+        <div class="w-full glassmorphism rounded-3xl p-6 md:p-10 shadow-2xl relative overflow-hidden transition-all duration-300">
+            <!-- Decorative Elements -->
+            <div class="absolute -right-8 -bottom-8 opacity-10 dark:opacity-5 text-gray-900 dark:text-white pointer-events-none">
+                <i class="fa-solid fa-quote-right text-9xl"></i>
+            </div>
+
+            <div class="relative z-10 flex flex-col justify-between min-h-[220px]">
+                
+                <!-- Category Badge -->
+                <div class="flex justify-between items-center mb-4">
+                    <span id="quoteCategory" class="px-3 py-1 rounded-full text-xs font-semibold uppercase tracking-wider bg-purple-100 dark:bg-purple-900/60 text-purple-700 dark:text-purple-300 border border-purple-200 dark:border-purple-700">
+                        Motivasi
+                    </span>
+                    
+                    <span id="quoteIndex" class="text-xs text-gray-500 dark:text-gray-400 font-mono">
+                        #1
+                    </span>
+                </div>
+
+                <!-- Quote Text Block -->
+                <div id="quoteContent" class="my-4 transition-all duration-300">
+                    <p id="quoteText" class="font-serif text-xl sm:text-2xl md:text-3xl italic text-gray-800 dark:text-gray-100 leading-relaxed md:leading-normal">
+                        "Setiap hari adalah peluang baharu untuk mengubah hidup anda menjadi lebih baik."
+                    </p>
+                    <div class="mt-4 flex items-center justify-end gap-2">
+                        <span class="w-8 h-[2px] bg-purple-500/50 inline-block"></span>
+                        <h4 id="quoteAuthor" class="font-sans font-bold text-base md:text-lg text-purple-700 dark:text-purple-300">
+                            Anonim
+                        </h4>
+                    </div>
+                </div>
+
+                <!-- Card Action Toolbar -->
+                <div class="mt-8 pt-6 border-t border-gray-200/50 dark:border-gray-700/50 flex flex-wrap justify-between items-center gap-4">
+                    
+                    <!-- Left Actions: Sound, Copy, Share, Save -->
+                    <div class="flex items-center gap-2">
+                        <!-- Read Aloud Button -->
+                        <button id="speakBtn" title="Dengar Suara" class="p-3 rounded-2xl bg-gray-100 hover:bg-purple-100 dark:bg-gray-800/80 dark:hover:bg-purple-900/40 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all active:scale-95">
+                            <i class="fa-solid fa-volume-high text-lg"></i>
+                        </button>
+
+                        <!-- Copy Button -->
+                        <button id="copyBtn" title="Salin Teks" class="p-3 rounded-2xl bg-gray-100 hover:bg-purple-100 dark:bg-gray-800/80 dark:hover:bg-purple-900/40 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all active:scale-95">
+                            <i class="fa-regular fa-copy text-lg"></i>
+                        </button>
+
+                        <!-- Share Twitter/X -->
+                        <button id="shareBtn" title="Kongsi ke Twitter" class="p-3 rounded-2xl bg-gray-100 hover:bg-purple-100 dark:bg-gray-800/80 dark:hover:bg-purple-900/40 text-gray-600 dark:text-gray-300 hover:text-purple-600 dark:hover:text-purple-400 transition-all active:scale-95">
+                            <i class="fa-brands fa-x-twitter text-lg"></i>
+                        </button>
+
+                        <!-- Favorite Toggle -->
+                        <button id="favBtn" title="Simpan ke Kegemaran" class="p-3 rounded-2xl bg-gray-100 hover:bg-pink-100 dark:bg-gray-800/80 dark:hover:bg-pink-900/40 text-gray-600 dark:text-gray-300 hover:text-pink-500 dark:hover:text-pink-400 transition-all active:scale-95">
+                            <i id="favIcon" class="fa-regular fa-heart text-lg"></i>
+                        </button>
+                    </div>
+
+                    <!-- Right Action: Next Quote -->
+                    <button id="newQuoteBtn" class="flex items-center gap-2 px-6 py-3 rounded-2xl bg-gradient-to-r from-purple-600 to-indigo-600 hover:from-purple-700 hover:to-indigo-700 text-white font-semibold shadow-lg shadow-purple-500/30 hover:shadow-purple-500/50 transition-all transform hover:-translate-y-0.5 active:translate-y-0 active:scale-95">
+                        <span>Seterusnya</span>
+                        <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+                    </button>
+                </div>
+
+            </div>
+        </div>
+    </main>
+
+    <!-- Modal Saved Favorites -->
+    <div id="favoritesModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+        <div class="bg-white dark:bg-gray-900 rounded-3xl max-w-2xl w-full max-h-[85vh] flex flex-col shadow-2xl overflow-hidden border border-white/20 transform scale-95 transition-all duration-300" id="modalContent">
+            
+            <!-- Modal Header -->
+            <div class="p-6 border-b border-gray-100 dark:border-gray-800 flex justify-between items-center bg-gray-50/50 dark:bg-gray-800/50">
+                <div class="flex items-center gap-3">
+                    <i class="fa-solid fa-bookmark text-amber-400 text-xl"></i>
+                    <h3 class="text-xl font-bold text-gray-800 dark:text-white">Kata-Kata Kegemaran</h3>
+                </div>
+                <button id="closeFavoritesBtn" class="p-2 rounded-xl text-gray-400 hover:text-gray-600 dark:hover:text-white hover:bg-gray-200 dark:hover:bg-gray-800 transition-all">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Modal Body (List of Favorites) -->
+            <div id="favoritesList" class="p-6 overflow-y-auto space-y-4 flex-1">
+                <!-- Quotes dynamically rendered here -->
+            </div>
+
+            <!-- Modal Footer -->
+            <div class="p-4 border-t border-gray-100 dark:border-gray-800 bg-gray-50/50 dark:bg-gray-800/50 flex justify-between items-center text-xs text-gray-500 dark:text-gray-400">
+                <span id="favTotalText">0 kata-kata disimpan</span>
+                <button id="clearAllFavsBtn" class="text-red-500 hover:text-red-700 dark:hover:text-red-400 font-medium hover:underline hidden">
+                    Padam Semua
+                </button>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- Toast Notification -->
+    <div id="toast" class="fixed bottom-6 right-6 z-50 flex items-center gap-3 px-5 py-3.5 bg-gray-900 dark:bg-white text-white dark:text-gray-900 rounded-2xl shadow-2xl transform translate-y-20 opacity-0 transition-all duration-300 border border-gray-700 dark:border-gray-200">
+        <i id="toastIcon" class="fa-solid fa-circle-check text-green-400 dark:text-green-600 text-lg"></i>
+        <span id="toastMessage" class="text-sm font-medium">Berjaya disalin!</span>
+    </div>
+
+    <!-- Footer -->
+    <footer class="w-full text-center py-4 text-xs text-white/70">
+        <p>© 2026 HikmatKata — Dibuat khas untuk inspirasi setiap hari.</p>
+    </footer>
+
+    <!-- JavaScript Application Logic -->
+    <script>
+        // --- 1. PRE-LOADED QUOTE COLLECTION ---
+        const quotesDatabase = [
+            {
+                id: 1,
+                quote: "Cara terbaik untuk meramal masa depan adalah dengan menciptanya sendiri.",
+                author: "Peter Drucker",
+                category: "Kejayaan"
+            },
+            {
+                id: 2,
+                quote: "Pendidikan adalah senjata paling berkuasa yang boleh anda gunakan untuk mengubah dunia.",
+                author: "Nelson Mandela",
+                category: "Kebijaksanaan"
+            },
+            {
+                id: 3,
+                quote: "Masa depan dimiliki oleh mereka yang percaya pada keindahan impian mereka.",
+                author: "Eleanor Roosevelt",
+                category: "Motivasi"
+            },
+            {
+                id: 4,
+                quote: "Kejayaan bukanlah penamat, kegagalan bukan penentu: keberanian untuk meneruskan yang paling bernilai.",
+                author: "Winston Churchill",
+                category: "Kejayaan"
+            },
+            {
+                id: 5,
+                quote: "Kehidupan adalah 10% apa yang berlaku kepada kita dan 90% bagaimana kita bertindak balas terhadapnya.",
+                author: "Charles R. Swindoll",
+                category: "Kehidupan"
+            },
+            {
+                id: 6,
+                quote: "Teknologi adalah alat. Dalam hal membuat anak-anak bekerja bersama dan memotivasi mereka, guru adalah yang paling penting.",
+                author: "Bill Gates",
+                category: "Teknologi"
+            },
+            {
+                id: 7,
+                quote: "Satu-satunya cara untuk melakukan kerja hebat adalah dengan mencintai apa yang anda lakukan.",
+                author: "Steve Jobs",
+                category: "Kejayaan"
+            },
+            {
+                id: 8,
+                quote: "Kebijaksanaan tidak datang dari pengalaman, tetapi dari perenungan atas pengalaman tersebut.",
+                author: "John Dewey",
+                category: "Kebijaksanaan"
+            },
+            {
+                id: 9,
+                quote: "Jangan tunggu peluang. Ciptakannya.",
+                author: "George Bernard Shaw",
+                category: "Motivasi"
+            },
+            {
+                id: 10,
+                quote: "Masa anda terhad, jadi jangan buang masa dengan menjalani hidup orang lain.",
+                author: "Steve Jobs",
+                category: "Kehidupan"
+            },
+            {
+                id: 11,
+                quote: "Teknologi terbaik adalah teknologi yang tidak disedari kewujudannya kerana ia menyatu dengan kehidupan.",
+                author: "Mark Weiser",
+                category: "Teknologi"
+            },
+            {
+                id: 12,
+                quote: "Bukan kerana sukar kita tidak berani, tetapi kerana kita tidak berani ia menjadi sukar.",
+                author: "Seneca",
+                category: "Kebijaksanaan"
+            },
+            {
+                id: 13,
+                quote: "Tetapkan matlamat anda tinggi-tinggi, dan jangan berhenti sehingga anda mencapainya.",
+                author: "Bo Jackson",
+                category: "Motivasi"
+            },
+            {
+                id: 14,
+                quote: "Hidup ini mudah, tetapi kita yang berkeras untuk menjadikannya rumit.",
+                author: "Confucius",
+                category: "Kehidupan"
+            },
+            {
+                id: 15,
+                quote: "Inovasi membezakan antara seorang pemimpin dan pengikut.",
+                author: "Steve Jobs",
+                category: "Teknologi"
+            }
+        ];
+
+        // --- 2. STATE MANAGEMENT ---
+        let currentFilteredQuotes = [...quotesDatabase];
+        let currentQuote = null;
+        let favoriteQuotes = JSON.parse(localStorage.getItem('hikmatKata_favs')) || [];
+        let activeCategory = 'all';
+
+        // --- 3. DOM ELEMENTS ---
+        const quoteTextEl = document.getElementById('quoteText');
+        const quoteAuthorEl = document.getElementById('quoteAuthor');
+        const quoteCategoryEl = document.getElementById('quoteCategory');
+        const quoteIndexEl = document.getElementById('quoteIndex');
+        const quoteContentEl = document.getElementById('quoteContent');
+
+        const newQuoteBtn = document.getElementById('newQuoteBtn');
+        const copyBtn = document.getElementById('copyBtn');
+        const speakBtn = document.getElementById('speakBtn');
+        const shareBtn = document.getElementById('shareBtn');
+        const favBtn = document.getElementById('favBtn');
+        const favIcon = document.getElementById('favIcon');
+
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        const themeIcon = document.getElementById('themeIcon');
+
+        const categoryButtons = document.querySelectorAll('.category-btn');
+        const searchInput = document.getElementById('searchInput');
+
+        const openFavoritesBtn = document.getElementById('openFavoritesBtn');
+        const closeFavoritesBtn = document.getElementById('closeFavoritesBtn');
+        const favoritesModal = document.getElementById('favoritesModal');
+        const modalContent = document.getElementById('modalContent');
+        const favoritesList = document.getElementById('favoritesList');
+        const favCountBadge = document.getElementById('favCountBadge');
+        const favTotalText = document.getElementById('favTotalText');
+        const clearAllFavsBtn = document.getElementById('clearAllFavsBtn');
+
+        const toast = document.getElementById('toast');
+        const toastMessage = document.getElementById('toastMessage');
+        const toastIcon = document.getElementById('toastIcon');
+
+        // --- 4. FUNCTIONS ---
+
+        // Initialize App
+        function initApp() {
+            updateFavoritesCount();
+            getRandomQuote();
+            setupTheme();
+        }
+
+        // Display Random Quote with Fade Animation
+        function getRandomQuote() {
+            if (currentFilteredQuotes.length === 0) {
+                quoteTextEl.textContent = "Tiada kata-kata hikmat ditemui untuk carian atau kategori ini.";
+                quoteAuthorEl.textContent = "-";
+                quoteCategoryEl.textContent = "N/A";
+                quoteIndexEl.textContent = "#0";
+                return;
+            }
+
+            // Smooth Fade-out effect
+            quoteContentEl.classList.add('opacity-0', 'translate-y-2');
+
+            setTimeout(() => {
+                const randomIndex = Math.floor(Math.random() * currentFilteredQuotes.length);
+                currentQuote = currentFilteredQuotes[randomIndex];
+
+                quoteTextEl.textContent = `"${currentQuote.quote}"`;
+                quoteAuthorEl.textContent = currentQuote.author;
+                quoteCategoryEl.textContent = currentQuote.category;
+                quoteIndexEl.textContent = `#${currentQuote.id}`;
+
+                updateFavButtonState();
+
+                // Fade-in effect
+                quoteContentEl.classList.remove('opacity-0', 'translate-y-2');
+                quoteContentEl.classList.add('animate-fade-in');
+            }, 200);
+        }
+
+        // Filter Quotes by Category & Search Keyword
+        function filterQuotes() {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+
+            currentFilteredQuotes = quotesDatabase.filter(q => {
+                const matchesCategory = (activeCategory === 'all') || (q.category === activeCategory);
+                const matchesSearch = q.quote.toLowerCase().includes(searchTerm) || q.author.toLowerCase().includes(searchTerm);
+                return matchesCategory && matchesSearch;
+            });
+
+            getRandomQuote();
+        }
+
+        // Favorite Toggle Functionality
+        function toggleFavorite() {
+            if (!currentQuote) return;
+
+            const existingIndex = favoriteQuotes.findIndex(fav => fav.id === currentQuote.id);
+
+            if (existingIndex > -1) {
+                favoriteQuotes.splice(existingIndex, 1);
+                showToast("Dibuang daripada kegemaran", "fa-circle-minus", "text-amber-400");
+            } else {
+                favoriteQuotes.push(currentQuote);
+                showToast("Disimpan ke kegemaran!", "fa-heart", "text-pink-500");
+            }
+
+            localStorage.setItem('hikmatKata_favs', JSON.stringify(favoriteQuotes));
+            updateFavButtonState();
+            updateFavoritesCount();
+        }
+
+        function updateFavButtonState() {
+            if (!currentQuote) return;
+            const isFav = favoriteQuotes.some(fav => fav.id === currentQuote.id);
+            if (isFav) {
+                favIcon.className = "fa-solid fa-heart text-lg text-pink-500";
+            } else {
+                favIcon.className = "fa-regular fa-heart text-lg";
+            }
+        }
+
+        function updateFavoritesCount() {
+            const count = favoriteQuotes.length;
+            favCountBadge.textContent = count;
+            favTotalText.textContent = `${count} kata-kata disimpan`;
+
+            if (count > 0) {
+                favCountBadge.classList.remove('hidden');
+                clearAllFavsBtn.classList.remove('hidden');
+            } else {
+                favCountBadge.classList.add('hidden');
+                clearAllFavsBtn.classList.add('hidden');
+            }
+        }
+
+        // Render Favorites inside Modal
+        function renderFavoritesList() {
+            favoritesList.innerHTML = '';
+
+            if (favoriteQuotes.length === 0) {
+                favoritesList.innerHTML = `
+                    <div class="text-center py-10 text-gray-400 dark:text-gray-500">
+                        <i class="fa-regular fa-bookmark text-4xl mb-3 opacity-50"></i>
+                        <p class="text-sm font-medium">Belum ada kata-kata disimpan.</p>
+                        <p class="text-xs mt-1">Tekan ikon hati untuk menyimpan kata-kata kegemaran anda.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            favoriteQuotes.forEach((item) => {
+                const favCard = document.createElement('div');
+                favCard.className = "p-4 rounded-2xl bg-gray-50 dark:bg-gray-800/60 border border-gray-100 dark:border-gray-700/50 flex flex-col justify-between gap-3 group transition-all hover:shadow-md";
+                favCard.innerHTML = `
+                    <div>
+                        <span class="text-[10px] font-semibold uppercase tracking-wider px-2 py-0.5 rounded-full bg-purple-100 dark:bg-purple-900/40 text-purple-600 dark:text-purple-300">
+                            ${item.category}
+                        </span>
+                        <p class="font-serif italic text-sm md:text-base text-gray-800 dark:text-gray-200 mt-2">
+                            "${item.quote}"
+                        </p>
+                        <p class="text-xs font-bold text-purple-600 dark:text-purple-400 text-right mt-1">
+                            - ${item.author}
+                        </p>
+                    </div>
+                    <div class="flex justify-end gap-2 pt-2 border-t border-gray-200/40 dark:border-gray-700/40">
+                        <button onclick="copySpecificText('${item.quote.replace(/'/g, "\\'")}', '${item.author}')" class="p-2 text-xs text-gray-500 hover:text-purple-600 dark:text-gray-400 dark:hover:text-purple-300 rounded-lg hover:bg-gray-200/50 dark:hover:bg-gray-700 transition-all" title="Salin">
+                            <i class="fa-regular fa-copy"></i>
+                        </button>
+                        <button onclick="removeFavorite(${item.id})" class="p-2 text-xs text-red-500 hover:text-red-700 dark:hover:text-red-400 rounded-lg hover:bg-red-50 dark:hover:bg-red-950/30 transition-all" title="Padam">
+                            <i class="fa-solid fa-trash-can"></i>
+                        </button>
+                    </div>
+                `;
+                favoritesList.appendChild(favCard);
+            });
+        }
+
+        function removeFavorite(id) {
+            favoriteQuotes = favoriteQuotes.filter(item => item.id !== id);
+            localStorage.setItem('hikmatKata_favs', JSON.stringify(favoriteQuotes));
+            updateFavoritesCount();
+            renderFavoritesList();
+            updateFavButtonState();
+            showToast("Item dipadam", "fa-trash-can", "text-gray-400");
+        }
+
+        // Text-To-Speech (Web Speech API)
+        function speakQuote() {
+            if (!currentQuote) return;
+            
+            if ('speechSynthesis' in window) {
+                window.speechSynthesis.cancel(); // Stop any ongoing speech
+                const textToSpeak = `${currentQuote.quote} oleh ${currentQuote.author}`;
+                const utterance = new SpeechSynthesisUtterance(textToSpeak);
+                utterance.lang = 'ms-MY'; // Set language Malay (fallback to browser default if not available)
+                utterance.rate = 0.9;
+                
+                speakBtn.classList.add('text-purple-600', 'animate-bounce-short');
+                utterance.onend = () => {
+                    speakBtn.classList.remove('text-purple-600', 'animate-bounce-short');
+                };
+                
+                window.speechSynthesis.speak(utterance);
+            } else {
+                showToast("Mod Suara tidak disokong oleh pelayar ini", "fa-circle-exclamation", "text-amber-500");
+            }
+        }
+
+        // Clipboard Copy
+        function copyToClipboard() {
+            if (!currentQuote) return;
+            copySpecificText(currentQuote.quote, currentQuote.author);
+        }
+
+        function copySpecificText(quote, author) {
+            const textFormatted = `"${quote}" - ${author}`;
+            
+            // execCommand fallback for seamless iframe & web compatibility
+            const tempTextArea = document.createElement("textarea");
+            tempTextArea.value = textFormatted;
+            document.body.appendChild(tempTextArea);
+            tempTextArea.select();
+            document.execCommand("copy");
+            document.body.removeChild(tempTextArea);
+
+            showToast("Berjaya disalin ke papan keratan!", "fa-circle-check", "text-green-400");
+        }
+
+        // Share to Twitter/X
+        function shareToTwitter() {
+            if (!currentQuote) return;
+            const tweetText = encodeURIComponent(`"${currentQuote.quote}" — ${currentQuote.author}\n\nDijana via #HikmatKata`);
+            const twitterUrl = `https://twitter.com/intent/tweet?text=${tweetText}`;
+            window.open(twitterUrl, '_blank');
+        }
+
+        // Toast Notification Trigger
+        function showToast(message, iconClass = "fa-circle-check", iconColor = "text-green-400") {
+            toastMessage.textContent = message;
+            toastIcon.className = `fa-solid ${iconClass} ${iconColor} text-lg`;
+            
+            toast.classList.remove('translate-y-20', 'opacity-0');
+            toast.classList.add('translate-y-0', 'opacity-100');
+
+            setTimeout(() => {
+                toast.classList.remove('translate-y-0', 'opacity-100');
+                toast.classList.add('translate-y-20', 'opacity-0');
+            }, 2500);
+        }
+
+        // Theme Setup & Toggle (Dark Mode)
+        function setupTheme() {
+            const savedTheme = localStorage.getItem('hikmatKata_theme');
+            if (savedTheme === 'dark' || (!savedTheme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+                document.documentElement.classList.add('dark');
+                themeIcon.className = "fa-solid fa-sun text-amber-300 text-lg";
+            } else {
+                document.documentElement.classList.remove('dark');
+                themeIcon.className = "fa-solid fa-moon text-lg";
+            }
+        }
+
+        function toggleTheme() {
+            if (document.documentElement.classList.contains('dark')) {
+                document.documentElement.classList.remove('dark');
+                localStorage.setItem('hikmatKata_theme', 'light');
+                themeIcon.className = "fa-solid fa-moon text-lg";
+            } else {
+                document.documentElement.classList.add('dark');
+                localStorage.setItem('hikmatKata_theme', 'dark');
+                themeIcon.className = "fa-solid fa-sun text-amber-300 text-lg";
+            }
+        }
+
+        // --- 5. EVENT LISTENERS ---
+
+        newQuoteBtn.addEventListener('click', getRandomQuote);
+        favBtn.addEventListener('click', toggleFavorite);
+        copyBtn.addEventListener('click', copyToClipboard);
+        speakBtn.addEventListener('click', speakQuote);
+        shareBtn.addEventListener('click', shareToTwitter);
+        themeToggleBtn.addEventListener('click', toggleTheme);
+
+        // Category Selection Filter
+        categoryButtons.forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                categoryButtons.forEach(b => {
+                    b.classList.remove('active', 'bg-white', 'dark:bg-gray-800', 'text-purple-600', 'dark:text-purple-400', 'shadow-md');
+                    b.classList.add('bg-white/40', 'dark:bg-gray-800/40', 'text-white', 'dark:text-gray-300');
+                });
+
+                const target = e.currentTarget;
+                target.classList.remove('bg-white/40', 'dark:bg-gray-800/40', 'text-white', 'dark:text-gray-300');
+                target.classList.add('active', 'bg-white', 'dark:bg-gray-800', 'text-purple-600', 'dark:text-purple-400', 'shadow-md');
+
+                activeCategory = target.getAttribute('data-category');
+                filterQuotes();
+            });
+        });
+
+        // Search Input Filter
+        searchInput.addEventListener('input', filterQuotes);
+
+        // Favorites Modal Control
+        openFavoritesBtn.addEventListener('click', () => {
+            renderFavoritesList();
+            favoritesModal.classList.remove('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-95');
+            modalContent.classList.add('scale-100');
+        });
+
+        closeFavoritesBtn.addEventListener('click', () => {
+            favoritesModal.classList.add('opacity-0', 'pointer-events-none');
+            modalContent.classList.remove('scale-100');
+            modalContent.classList.add('scale-95');
+        });
+
+        // Close Modal when clicking outside
+        favoritesModal.addEventListener('click', (e) => {
+            if (e.target === favoritesModal) {
+                closeFavoritesBtn.click();
+            }
+        });
+
+        // Clear All Favorites
+        clearAllFavsBtn.addEventListener('click', () => {
+            if (confirm("Adakah anda pasti mahu memadam semua kata-kata kegemaran?")) {
+                favoriteQuotes = [];
+                localStorage.setItem('hikmatKata_favs', JSON.stringify(favoriteQuotes));
+                updateFavoritesCount();
+                renderFavoritesList();
+                updateFavButtonState();
+                showToast("Semua kegemaran dipadamkan", "fa-trash-can", "text-red-400");
+            }
+        });
+
+        // --- 6. START APPLICATION ---
+        window.onload = initApp;
+    </script>
+</body>
+</html>
